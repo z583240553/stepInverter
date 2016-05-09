@@ -43,15 +43,15 @@ local inputIO_cmds ={
   [4] = "X3",           --X3
   [5] = "X4",           --X4
   [6] = "X5",           --X5
-  [7] = "X6",		    --X6
+  [7] = "X6"		    --X6
 }
 local outputIO_cmds ={
   [1] = "K1",           --K1 有值1时蓝色显示 值0时灰色显示
   [2] = "K2",           --K2
   [3] = "K3",           --K3
   [4] = "K4",           --K4
-  [5] = "K5",           --K5
-  [6] = "K6",           --K6
+  [5] = "Y0",           --Y0
+  [6] = "Y1"            --Y1
 }
 local para_1 = {
   ["P00_"] = 3,
@@ -233,8 +233,8 @@ function _M.decode(payload)
           packet[ cmds[2] ] = 'Mode-232'
       end
 
-      local bitbuff_table0={}  --用来暂存inputIO_state/outputIO_state的每位bit值
-      local bitbuff_table1={}  --用来暂存inputIO_state/outputIO_state的每位bit值
+      local bitbuff_table0={}  --用来暂存inputIO_state的每位bit值
+      local bitbuff_table1={}  --用来暂存outputIO_state的每位bit值
 
       local func = getnumber(10)
       if func == 1 then
