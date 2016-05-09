@@ -246,6 +246,7 @@ function _M.decode(payload)
           	local x = bit.band(databuff_table0[i],bit.lshift(1,15))
 			if(x == 0) then
 				databuff_table1[i] = databuff_table0[i]
+				packet[-i] = databuff_table0[i] 
 			else
 				databuff_table1[i] = -(0xffff-databuff_table0[i]+1)
 				packet[i] = databuff_table1[i] 
