@@ -247,7 +247,7 @@ function _M.decode(payload)
     	    packet[ status_cmds[8] ] = ( bit.lshift( getnumber(26) , 8 ) + getnumber(27) ) / 1000  
             packet[ status_cmds[9] ] = ( bit.lshift( getnumber(28) , 8 ) + getnumber(29) ) / 1000
             packet[ status_cmds[16] ] = ( bit.lshift( getnumber(42) , 8 ) + getnumber(43) ) / 10
---[[
+
 			local bitbuff_table={}  --用来暂存inputIO_state/outputIO_state的每位bit值
             --解析inputIO_state(对应高字节getnumber[36],低字节getnumber[37])的每个bit位值
 			for j=0,1 do
@@ -287,7 +287,7 @@ function _M.decode(payload)
 			packet[ outputIO_state[4] ] = bitbuff_table[4]
 			packet[ outputIO_state[5] ] = bitbuff_table[5]
 			packet[ outputIO_state[6] ] = bitbuff_table[6]
-	]]
+	
 		
           for i=1,43,1 do        
             table.insert(FCS_Array,getnumber(i))
