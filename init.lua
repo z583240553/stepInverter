@@ -233,7 +233,8 @@ function _M.decode(payload)
           packet[ cmds[2] ] = 'Mode-232'
       end
 
-      local bitbuff_table={}  --用来暂存inputIO_state/outputIO_state的每位bit值
+      local bitbuff_table0={}  --用来暂存inputIO_state/outputIO_state的每位bit值
+      local bitbuff_table1={}  --用来暂存inputIO_state/outputIO_state的每位bit值
 
       local func = getnumber(10)
       if func == 1 then
@@ -264,32 +265,32 @@ function _M.decode(payload)
 			end
 			
 			--将inputIO_state的每位bit值转化为JSON格式数据
-			packet[ inputIO_cmds[1] ] = bitbuff_table[1]
-			packet[ inputIO_cmds[2] ] = bitbuff_table[2]
-			packet[ inputIO_cmds[3] ] = bitbuff_table[3]
-			packet[ inputIO_cmds[4] ] = bitbuff_table[4]
-			packet[ inputIO_cmds[5] ] = bitbuff_table[5]
-			packet[ inputIO_cmds[6] ] = bitbuff_table[6]
-			packet[ inputIO_cmds[7] ] = bitbuff_table[7]
+			packet[ inputIO_cmds[1] ] = bitbuff_table0[1]
+			packet[ inputIO_cmds[2] ] = bitbuff_table0[2]
+			packet[ inputIO_cmds[3] ] = bitbuff_table0[3]
+			packet[ inputIO_cmds[4] ] = bitbuff_table0[4]
+			packet[ inputIO_cmds[5] ] = bitbuff_table0[5]
+			packet[ inputIO_cmds[6] ] = bitbuff_table0[6]
+			packet[ inputIO_cmds[7] ] = bitbuff_table0[7]
 			
 			--解析outputIO_state(对应高字节getnumber[38],低字节getnumber[39])的每个bit位值
 			for j=0,1 do
 				for i=0,7 do
 					local y = bit.band(getnumber((39-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
 					if(y == 0) then 
-		               bitbuff_table[j*8+i+1] = 0
+		               bitbuff_table1[j*8+i+1] = 0
 		            else
-		               bitbuff_table[j*8+i+1] = 1
+		               bitbuff_table1[j*8+i+1] = 1
 		            end 
 				end
 			end
 			--将outputIO_state的每位bit值转化为JSON格式数据
-			packet[ outputIO_cmds[1] ] = bitbuff_table[1]
-			packet[ outputIO_cmds[2] ] = bitbuff_table[2]
-			packet[ outputIO_cmds[3] ] = bitbuff_table[3]
-			packet[ outputIO_cmds[4] ] = bitbuff_table[4]
-			packet[ outputIO_cmds[5] ] = bitbuff_table[5]
-			packet[ outputIO_cmds[6] ] = bitbuff_table[6]
+			packet[ outputIO_cmds[1] ] = bitbuff_table1[1]
+			packet[ outputIO_cmds[2] ] = bitbuff_table1[2]
+			packet[ outputIO_cmds[3] ] = bitbuff_table1[3]
+			packet[ outputIO_cmds[4] ] = bitbuff_table1[4]
+			packet[ outputIO_cmds[5] ] = bitbuff_table1[5]
+			packet[ outputIO_cmds[6] ] = bitbuff_table1[6]
 		
           for i=1,43,1 do        
             table.insert(FCS_Array,getnumber(i))
