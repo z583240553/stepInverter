@@ -256,9 +256,9 @@ function _M.decode(payload)
 				for i=0,7 do
 					local y = bit.band(getnumber((37-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
 					if(y == 0) then 
-		               bitbuff_table[j*8+i+1] = 0
+		               bitbuff_table0[j*8+i+1] = 0
 		            else
-		               bitbuff_table[j*8+i+1] = 1
+		               bitbuff_table0[j*8+i+1] = 1
 		            end 
 				end
 			end
@@ -284,12 +284,12 @@ function _M.decode(payload)
 				end
 			end
 			--将outputIO_state的每位bit值转化为JSON格式数据
-			packet[ outputIO_state[1] ] = bitbuff_table[1]
-			packet[ outputIO_state[2] ] = bitbuff_table[2]
-			packet[ outputIO_state[3] ] = bitbuff_table[3]
-			packet[ outputIO_state[4] ] = bitbuff_table[4]
-			packet[ outputIO_state[5] ] = bitbuff_table[5]
-			packet[ outputIO_state[6] ] = bitbuff_table[6]
+			packet[ outputIO_cmds[1] ] = bitbuff_table[1]
+			packet[ outputIO_cmds[2] ] = bitbuff_table[2]
+			packet[ outputIO_cmds[3] ] = bitbuff_table[3]
+			packet[ outputIO_cmds[4] ] = bitbuff_table[4]
+			packet[ outputIO_cmds[5] ] = bitbuff_table[5]
+			packet[ outputIO_cmds[6] ] = bitbuff_table[6]
 		
           for i=1,43,1 do        
             table.insert(FCS_Array,getnumber(i))
