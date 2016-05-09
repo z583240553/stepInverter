@@ -18,24 +18,41 @@ local cmds = {
 }
 
 local status_cmds = {
-  [1] = "feedback_speed",
-  [2] = "given_speed",
-  [3] = "output_voltage",
-  [4] = "output_current",
-  [5] = "output_torque",
-  [6] = "bus_voltage",
+  [1] = "feedback_speed",           --反馈速度
+  [2] = "given_speed",              --给定速度
+  [3] = "output_voltage",           --输出电压
+  [4] = "output_current",           --输出电流
+  [5] = "output_torque",             --输出转矩
+  [6] = "bus_voltage",              --母线电压
   [7] = "analog_input0",
   [8] = "analog_input1",
   [9] = "analog_input2",
-  [10] = "cooling_temperature",
-  [11] = "output_actpow",
-  [12] = "run_state",
+  [10] = "cooling_temperature",      --散热器温度
+  [11] = "output_actpow",        
+  [12] = "run_state",                --运行状态
   [13] = "inputIO_state",
-  [14] = "outputIO_state",
-  [15] = "drive_efficiency",
-  [16] = "output_rmp"
+  [14] = "outputIO_state",          
+  [15] = "drive_efficiency",         --驱动器效率
+  [16] = "output_rmp"                --输出转速
 }
 
+local inputIO_cmds ={
+  [1] = "X0",           --X0 有值1时绿色显示 值0时灰色显示
+  [2] = "X1",           --X1
+  [3] = "X2",           --X2
+  [4] = "X3",           --X3
+  [5] = "X4",           --X4
+  [6] = "X5",           --X5
+  [7] = "X6",		    --X6
+}
+local outputIO_cmds ={
+  [1] = "K1",           --K1 有值1时蓝色显示 值0时灰色显示
+  [2] = "K2",           --K2
+  [3] = "K3",           --K3
+  [4] = "K4",           --K4
+  [5] = "K5",           --K5
+  [6] = "K6",           --K6
+}
 local para_1 = {
   ["P00_"] = 3,
   ["P10_"] = 11,
@@ -228,7 +245,50 @@ function _M.decode(payload)
     	    packet[ status_cmds[5] ] = ( bit.lshift( getnumber(20) , 8 ) + getnumber(21) ) / 10
     	    packet[ status_cmds[7] ] = ( bit.lshift( getnumber(24) , 8 ) + getnumber(25) ) / 1000  
     	    packet[ status_cmds[8] ] = ( bit.lshift( getnumber(26) , 8 ) + getnumber(27) ) / 1000  
-          packet[ status_cmds[9] ] = ( bit.lshift( getnumber(28) , 8 ) + getnumber(29) ) / 1000
+            packet[ status_cmds[9] ] = ( bit.lshift( getnumber(28) , 8 ) + getnumber(29) ) / 1000
+            packet[ status_cmds[16] ] = ( bit.lshift( getnumber(42) , 8 ) + getnumber(43) ) / 10
+
+			local bitbuff_table={}  --用来暂存inputIO_state/outputIO_state的每位bit值
+            --解析inputIO_state(对应高字节getnumber[36],低字节getnumber[37])的每个bit位值
+			for j=0,1 do
+				for i=0,7 do
+					local y = bit.band(getnumber((37-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
+					if(y == 0) then 
+		               bitbuff_table[j*8+i+1] = 0
+		            else
+		               bitbuff_table[j*8+i+1] = 1
+		            end 
+				end
+			end
+			--将inputIO_state的每位bit值转化为JSON格式数据
+			packet[ inputIO_cmds[1] ] = bitbuff_table[1]
+			packet[ inputIO_cmds[2] ] = bitbuff_table[2]
+			packet[ inputIO_cmds[3] ] = bitbuff_table[3]
+			packet[ inputIO_cmds[4] ] = bitbuff_table[4]
+			packet[ inputIO_cmds[5] ] = bitbuff_table[5]
+			packet[ inputIO_cmds[6] ] = bitbuff_table[6]
+			packet[ inputIO_cmds[7] ] = bitbuff_table[7]
+
+			--解析outputIO_state(对应高字节getnumber[38],低字节getnumber[39])的每个bit位值
+			for j=0,1 do
+				for i=0,7 do
+					local y = bit.band(getnumber((39-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
+					if(y == 0) then 
+		               bitbuff_table[j*8+i+1] = 0
+		            else
+		               bitbuff_table[j*8+i+1] = 1
+		            end 
+				end
+			end
+			--将outputIO_state的每位bit值转化为JSON格式数据
+			packet[ outputIO_state[1] ] = bitbuff_table[1]
+			packet[ outputIO_state[2] ] = bitbuff_table[2]
+			packet[ outputIO_state[3] ] = bitbuff_table[3]
+			packet[ outputIO_state[4] ] = bitbuff_table[4]
+			packet[ outputIO_state[5] ] = bitbuff_table[5]
+			packet[ outputIO_state[6] ] = bitbuff_table[6]
+	
+		
           for i=1,43,1 do        
             table.insert(FCS_Array,getnumber(i))
           end
