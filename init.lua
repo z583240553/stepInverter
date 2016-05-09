@@ -235,14 +235,29 @@ function _M.decode(payload)
 
       local bitbuff_table0={}  --用来暂存inputIO_state的每位bit值
       local bitbuff_table1={}  --用来暂存outputIO_state的每位bit值
-
+      local databuff_table={}
       local func = getnumber(10)
       if func == 1 then
           packet[ cmds[3] ] = 'func-status'
           FCS_Value = bit.lshift( getnumber(44) , 8 ) + getnumber(45)
-          for i=1,16,1 do        
-            packet[ status_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
+          for i=1,16,1 do  
+          	databuff_table[i] =  bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) 
+          	local x = bit.band(databuff_table[i],bit.lshift(1,15))
+			if(x == 1) then
+				databuff_table[i] = databuff_table[i]-0xffff-1
+			end 
+			  packet[ status_cmds[i] ] = databuff_table[i]    
+           --packet[ status_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
           end
+          	packet[ status_cmds[1] ] = databuff_table[1]  / 100
+    	    packet[ status_cmds[2] ] = databuff_table[2]  / 100
+    	    packet[ status_cmds[5] ] = databuff_table[5]  / 10
+    	    packet[ status_cmds[7] ] = databuff_table[7] / 1000  
+    	    packet[ status_cmds[8] ] = databuff_table[8] / 1000  
+            packet[ status_cmds[9] ] = databuff_table[9] / 1000
+            packet[ status_cmds[16] ] = databuff_table[16] / 10
+
+          --[[
     	    packet[ status_cmds[1] ] = ( bit.lshift( getnumber(12) , 8 ) + getnumber(13) ) / 100
     	    packet[ status_cmds[2] ] = ( bit.lshift( getnumber(14) , 8 ) + getnumber(15) ) / 100
     	    packet[ status_cmds[5] ] = ( bit.lshift( getnumber(20) , 8 ) + getnumber(21) ) / 10
@@ -250,8 +265,8 @@ function _M.decode(payload)
     	    packet[ status_cmds[8] ] = ( bit.lshift( getnumber(26) , 8 ) + getnumber(27) ) / 1000  
             packet[ status_cmds[9] ] = ( bit.lshift( getnumber(28) , 8 ) + getnumber(29) ) / 1000
             packet[ status_cmds[16] ] = ( bit.lshift( getnumber(42) , 8 ) + getnumber(43) ) / 10
+]]
 
-		
             --解析inputIO_state(对应高字节getnumber[36],低字节getnumber[37])的每个bit位值
 			for j=0,1 do
 				for i=0,7 do
