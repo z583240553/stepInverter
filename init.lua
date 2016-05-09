@@ -262,7 +262,7 @@ function _M.decode(payload)
 		            end 
 				end
 			end
-			--[[
+			
 			--将inputIO_state的每位bit值转化为JSON格式数据
 			packet[ inputIO_cmds[1] ] = bitbuff_table[1]
 			packet[ inputIO_cmds[2] ] = bitbuff_table[2]
@@ -271,7 +271,7 @@ function _M.decode(payload)
 			packet[ inputIO_cmds[5] ] = bitbuff_table[5]
 			packet[ inputIO_cmds[6] ] = bitbuff_table[6]
 			packet[ inputIO_cmds[7] ] = bitbuff_table[7]
-			]]
+			
 			
 --[[
 			--解析outputIO_state(对应高字节getnumber[38],低字节getnumber[39])的每个bit位值
