@@ -268,7 +268,7 @@ function _M.decode(payload)
 			packet[ inputIO_cmds[5] ] = bitbuff_table[5]
 			packet[ inputIO_cmds[6] ] = bitbuff_table[6]
 			packet[ inputIO_cmds[7] ] = bitbuff_table[7]
-
+--[[
 			--解析outputIO_state(对应高字节getnumber[38],低字节getnumber[39])的每个bit位值
 			for j=0,1 do
 				for i=0,7 do
@@ -287,7 +287,7 @@ function _M.decode(payload)
 			packet[ outputIO_state[4] ] = bitbuff_table[4]
 			packet[ outputIO_state[5] ] = bitbuff_table[5]
 			packet[ outputIO_state[6] ] = bitbuff_table[6]
-	
+	]]
 		
           for i=1,43,1 do        
             table.insert(FCS_Array,getnumber(i))
