@@ -244,7 +244,7 @@ function _M.decode(payload)
           	databuff_table[i] =  bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) 
           	local x = bit.band(databuff_table[i],bit.lshift(1,15))
 			if(x == 1) then
-				databuff_table[i] = databuff_table[i]-0xffff-1
+				databuff_table[i] = -(0xffff-databuff_table[4+i]+1)
 			end 
 			  packet[ status_cmds[i] ] = databuff_table[i]    
            --packet[ status_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
