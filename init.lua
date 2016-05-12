@@ -353,7 +353,7 @@ function _M.decode(payload)
       packet = {}
       packet['status'] = 'FCS-ERROR'
     end
-   -- end
+ end
 
     return Json(packet)
 end
