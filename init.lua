@@ -34,6 +34,9 @@ local status_cmds = {
   [14] = "outputIO_state",          
   [15] = "drive_efficiency",         --驱动器效率
   [16] = "output_rmp"                --输出转速
+  [17] = "run_state_1",             --运行状态 运行or停止
+  [18] = "run_state_2",             --运行状态 正转or反转
+  [19] = "run_state_3"              --运行状态 正常or故障
 }
 
 local inputIO_cmds ={
@@ -262,6 +265,26 @@ function _M.decode(payload)
           packet[ status_cmds[9] ] = databuff_table1[9] / 1000
           packet[ status_cmds[16] ] = databuff_table1[16] / 10
 
+          --解析run_state bit1 bit3 bit7对应运行停止 正反转 故障中
+          local m = bit.band(databuff_table1[12],bit.lshift(1,1))
+          if m==0 then
+            packet[ status_cmds[17] ] = 0
+          else
+            packet[ status_cmds[17] ] = 1
+          end
+          local n = bit.band(databuff_table1[12],bit.lshift(1,3))
+          if n==0 then
+            packet[ status_cmds[18] ] = 0
+          else
+            packet[ status_cmds[18] ] = 1
+          end
+          local k = bit.band(databuff_table1[12],bit.lshift(1,7))
+          if k==0 then
+            packet[ status_cmds[19] ] = 0
+          else
+            packet[ status_cmds[19] ] = 1
+          end
+
           --解析inputIO_state(对应高字节getnumber[36],低字节getnumber[37])的每个bit位值
     			for j=0,1 do
     				for i=0,7 do
@@ -321,26 +344,29 @@ function _M.decode(payload)
         end
 
       else
-        packet[ cmds[3] ] = 'func-parameter'
-        FCS_Value = bit.lshift( getnumber(912) , 8 ) + getnumber(913)
-        for i=1,450,1 do 
-    	    local temp = 0
-          if parameter_RealValue0[ parameter_cmds[i] ] ~= nil then
-            temp = parameter_RealValue0[ parameter_cmds[i] ]
-          else
-            temp = parameter_RealValue1[ parameter_cmds[i] ]
-          end --88
-    	    if temp ~= -1 then
-            local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / ( 10^temp )
-            local parastrformat = "%0."..temp.."f"
-    	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
-    	    end --00
-        end --99
-        for i=1,911,1 do        
-          table.insert(FCS_Array,getnumber(i))
-        end
-       -- end--
-      end----
+          packet[ cmds[3] ] = 'func-parameter'
+          FCS_Value = bit.lshift( getnumber(912) , 8 ) + getnumber(913)
+
+          for i=1,450,1 do 
+      	       local temp = 0
+              if(parameter_RealValue0[ parameter_cmds[i] ] ~= nil)then
+                temp = parameter_RealValue0[ parameter_cmds[i] ]
+              else
+                temp = parameter_RealValue1[ parameter_cmds[i] ]
+              end 
+
+        	    if temp ~= -1 then
+                local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / ( 10^temp )
+                local parastrformat = "%0."..temp.."f"
+        	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
+        	    end --88 
+          end
+
+          for i=1,911,1 do        
+            table.insert(FCS_Array,getnumber(i))
+          end
+        end 
+      end
 
       packet[ cmds[4] ] = getnumber(11)
 
@@ -351,7 +377,7 @@ function _M.decode(payload)
         packet['status'] = 'FCS-ERROR'
       end
 
-    end
+    end 
 
     return Json(packet)
 end
