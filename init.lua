@@ -34,9 +34,6 @@ local status_cmds = {
   [14] = "outputIO_state",          
   [15] = "drive_efficiency",         --驱动器效率
   [16] = "output_rmp"                --输出转速
-  [17] = "run_state_1",               --运行状态 运行or停止
-  [18] = "run_state_2",               --运行状态 正转or反转
-  [19] = "run_state_3"                --运行状态 正常or故障
 }
 
 local inputIO_cmds ={
@@ -220,7 +217,7 @@ function _M.decode(payload)
     local head1 = getnumber(1)
     local head2 = getnumber(2)
 
-    if ( head1 == 0x3B and head2 == 0x31 ) then
+    if ( head1 == 0x3B and head2 == 0x31 ) then 
       
       local templen = bit.lshift( getnumber(3) , 8 ) + getnumber(4)
       --templen will be the important parameter in the next calculate
@@ -244,116 +241,129 @@ function _M.decode(payload)
       if func == 1 then
           packet[ cmds[3] ] = 'func-status'
           FCS_Value = bit.lshift( getnumber(44) , 8 ) + getnumber(45)
-          for i=1,16,1 do
+          for i=1,16,1 do  
           	databuff_table0[i] =  bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) 
           	local x = bit.band(databuff_table0[i],bit.lshift(1,15))
-      			if(x == 0) then
-      				databuff_table1[i] = databuff_table0[i]
-      			else
-      				databuff_table1[i] = -(0xffff-databuff_table0[i]+1)
-      			end 
-			      packet[ status_cmds[i] ] = databuff_table1[i]    
+			if(x == 0) then
+				databuff_table1[i] = databuff_table0[i]
+			else
+				databuff_table1[i] = -(0xffff-databuff_table0[i]+1)
+			end 
+			  packet[ status_cmds[i] ] = databuff_table1[i]    
+           --packet[ status_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
           end
-          packet[ status_cmds[1] ] = databuff_table1[1]  / 100
+          	packet[ status_cmds[1] ] = databuff_table1[1]  / 100
     	    packet[ status_cmds[2] ] = databuff_table1[2]  / 100
     	    packet[ status_cmds[3] ] = databuff_table1[3]  / 10
     	    packet[ status_cmds[4] ] = databuff_table1[4]  / 10
     	    packet[ status_cmds[5] ] = databuff_table1[5]  / 10
     	    packet[ status_cmds[7] ] = databuff_table1[7] / 1000  
     	    packet[ status_cmds[8] ] = databuff_table1[8] / 1000  
-          packet[ status_cmds[9] ] = databuff_table1[9] / 1000
-          packet[ status_cmds[16] ] = databuff_table1[16] / 10
+            packet[ status_cmds[9] ] = databuff_table1[9] / 1000
+            packet[ status_cmds[16] ] = databuff_table1[16] / 10
+
+          --[[
+    	    packet[ status_cmds[1] ] = ( bit.lshift( getnumber(12) , 8 ) + getnumber(13) ) / 100
+    	    packet[ status_cmds[2] ] = ( bit.lshift( getnumber(14) , 8 ) + getnumber(15) ) / 100
+    	    packet[ status_cmds[5] ] = ( bit.lshift( getnumber(20) , 8 ) + getnumber(21) ) / 10
+    	    packet[ status_cmds[7] ] = ( bit.lshift( getnumber(24) , 8 ) + getnumber(25) ) / 1000  
+    	    packet[ status_cmds[8] ] = ( bit.lshift( getnumber(26) , 8 ) + getnumber(27) ) / 1000  
+            packet[ status_cmds[9] ] = ( bit.lshift( getnumber(28) , 8 ) + getnumber(29) ) / 1000
+            packet[ status_cmds[16] ] = ( bit.lshift( getnumber(42) , 8 ) + getnumber(43) ) / 10
+]]
 
             --解析inputIO_state(对应高字节getnumber[36],低字节getnumber[37])的每个bit位值
-    			for j=0,1 do
-    				for i=0,7 do
-    					local y = bit.band(getnumber((37-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
-    					if(y == 0) then 
-	               bitbuff_table0[j*8+i+1] = 0
-	            else
-	               bitbuff_table0[j*8+i+1] = 1
-	            end 
-    				end
-    			end
+			for j=0,1 do
+				for i=0,7 do
+					local y = bit.band(getnumber((37-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
+					if(y == 0) then 
+		               bitbuff_table0[j*8+i+1] = 0
+		            else
+		               bitbuff_table0[j*8+i+1] = 1
+		            end 
+				end
+			end
 			
-    			--将inputIO_state的每位bit值转化为JSON格式数据
-    			packet[ inputIO_cmds[1] ] = bitbuff_table0[1]
-    			packet[ inputIO_cmds[2] ] = bitbuff_table0[2]
-    			packet[ inputIO_cmds[3] ] = bitbuff_table0[3]
-    			packet[ inputIO_cmds[4] ] = bitbuff_table0[4]
-    			packet[ inputIO_cmds[5] ] = bitbuff_table0[5]
-    			packet[ inputIO_cmds[6] ] = bitbuff_table0[6]
-    			packet[ inputIO_cmds[7] ] = bitbuff_table0[7]
-    			
-    			--解析outputIO_state(对应高字节getnumber[38],低字节getnumber[39])的每个bit位值
-    			for j=0,1 do
-    				for i=0,7 do
-    					local y = bit.band(getnumber((39-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
-    					if(y == 0) then 
-	               bitbuff_table1[j*8+i+1] = 0
-	            else
-	               bitbuff_table1[j*8+i+1] = 1
-	            end 
-    				end
-    			end
-    			--将outputIO_state的每位bit值转化为JSON格式数据
-    			packet[ outputIO_cmds[1] ] = bitbuff_table1[1]
-    			packet[ outputIO_cmds[2] ] = bitbuff_table1[2]
-    			packet[ outputIO_cmds[3] ] = bitbuff_table1[3]
-    			packet[ outputIO_cmds[4] ] = bitbuff_table1[4]
-    			packet[ outputIO_cmds[5] ] = bitbuff_table1[5]
-    			packet[ outputIO_cmds[6] ] = bitbuff_table1[6]
+			--将inputIO_state的每位bit值转化为JSON格式数据
+			packet[ inputIO_cmds[1] ] = bitbuff_table0[1]
+			packet[ inputIO_cmds[2] ] = bitbuff_table0[2]
+			packet[ inputIO_cmds[3] ] = bitbuff_table0[3]
+			packet[ inputIO_cmds[4] ] = bitbuff_table0[4]
+			packet[ inputIO_cmds[5] ] = bitbuff_table0[5]
+			packet[ inputIO_cmds[6] ] = bitbuff_table0[6]
+			packet[ inputIO_cmds[7] ] = bitbuff_table0[7]
+			
+			--解析outputIO_state(对应高字节getnumber[38],低字节getnumber[39])的每个bit位值
+			for j=0,1 do
+				for i=0,7 do
+					local y = bit.band(getnumber((39-j)),bit.lshift(1,i)) --先低字节解析后高字节解析
+					if(y == 0) then 
+		               bitbuff_table1[j*8+i+1] = 0
+		            else
+		               bitbuff_table1[j*8+i+1] = 1
+		            end 
+				end
+			end
+			--将outputIO_state的每位bit值转化为JSON格式数据
+			packet[ outputIO_cmds[1] ] = bitbuff_table1[1]
+			packet[ outputIO_cmds[2] ] = bitbuff_table1[2]
+			packet[ outputIO_cmds[3] ] = bitbuff_table1[3]
+			packet[ outputIO_cmds[4] ] = bitbuff_table1[4]
+			packet[ outputIO_cmds[5] ] = bitbuff_table1[5]
+			packet[ outputIO_cmds[6] ] = bitbuff_table1[6]
 		
           for i=1,43,1 do        
             table.insert(FCS_Array,getnumber(i))
           end
           
-      else if func == 2 then
-        packet[ cmds[3] ] = 'func-fault'
-        FCS_Value = bit.lshift( getnumber(92) , 8 ) + getnumber(93)
-        for i=1,40,1 do
-    	    local x = i % 5
-    	    if x == 2 or x == 3 then
-            packet[ fault_cmds[i] ] = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / 100
-    	    else
-    	      packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
-    	    end
-        end
-        for i=1,91,1 do        
-          table.insert(FCS_Array,getnumber(i))
-        end
-
-      else
-        packet[ cmds[3] ] = 'func-parameter'
-        FCS_Value = bit.lshift( getnumber(912) , 8 ) + getnumber(913)
-        for i=1,450,1 do 
-    	    local temp = 0
-          if parameter_RealValue0[ parameter_cmds[i] ] ~= nil then
-            temp = parameter_RealValue0[ parameter_cmds[i] ]
-          else
-            temp = parameter_RealValue1[ parameter_cmds[i] ]
+        else if func == 2 then
+          packet[ cmds[3] ] = 'func-fault'
+          FCS_Value = bit.lshift( getnumber(92) , 8 ) + getnumber(93)
+          for i=1,40,1 do
+      	    local x = i % 5
+      	    if x == 2 or x == 3 then
+                    packet[ fault_cmds[i] ] = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / 100
+      	    else
+      	      packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
+      	    end
           end
-    	    if temp ~= -1 then
-            local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / ( 10^temp )
-            local parastrformat = "%0."..temp.."f"
-    	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
-    	    end
-        end
-        for i=1,911,1 do        
-          table.insert(FCS_Array,getnumber(i))
+          for i=1,91,1 do        
+            table.insert(FCS_Array,getnumber(i))
+          end
+
+        else
+          packet[ cmds[3] ] = 'func-parameter'
+          FCS_Value = bit.lshift( getnumber(912) , 8 ) + getnumber(913)
+          for i=1,450,1 do 
+      	    local temp = 0
+            if parameter_RealValue0[ parameter_cmds[i] ] ~= nil then
+              temp = parameter_RealValue0[ parameter_cmds[i] ]
+            else
+              temp = parameter_RealValue1[ parameter_cmds[i] ]
+            end
+      	    if temp ~= -1 then
+              local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / ( 10^temp )
+              local parastrformat = "%0."..temp.."f"
+      	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
+      	    end
+          end
+          for i=1,911,1 do        
+            table.insert(FCS_Array,getnumber(i))
+          end
+
         end
       end
-    end
 
-    packet[ cmds[4] ] = getnumber(11)
+      packet[ cmds[4] ] = getnumber(11)
 
-    if(utilCalcFCS(FCS_Array,#FCS_Array) == FCS_Value) then
-      packet['status'] = 'SUCCESS'
-    else
-      packet = {}
-      packet['status'] = 'FCS-ERROR'
+      if(utilCalcFCS(FCS_Array,#FCS_Array) == FCS_Value) then
+        packet['status'] = 'SUCCESS'
+      else
+        packet = {}
+        packet['status'] = 'FCS-ERROR'
+      end
+
     end
--- end
 
     return Json(packet)
 end
