@@ -238,6 +238,7 @@ function _M.decode(payload)
       local databuff_table0={}
       local databuff_table1={}
       local func = getnumber(10)
+
       if func == 1 then
           packet[ cmds[3] ] = 'func-status'
           FCS_Value = bit.lshift( getnumber(44) , 8 ) + getnumber(45)
@@ -328,18 +329,18 @@ function _M.decode(payload)
             temp = parameter_RealValue0[ parameter_cmds[i] ]
           else
             temp = parameter_RealValue1[ parameter_cmds[i] ]
-          end
+          end --88
     	    if temp ~= -1 then
             local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / ( 10^temp )
             local parastrformat = "%0."..temp.."f"
     	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
-    	    end
-        end
+    	    end --00
+        end --99
         for i=1,911,1 do        
           table.insert(FCS_Array,getnumber(i))
         end
-      end
-      end
+       -- end--
+      end----
 
       packet[ cmds[4] ] = getnumber(11)
 
