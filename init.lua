@@ -339,7 +339,8 @@ function _M.decode(payload)
           packet['test'] = 'test'
 
           for i=1,347,1 do 
-      	       local temp = 0
+      	      --[[
+              local temp = 0
               if(parameter_RealValue0[ parameter_cmds[i] ] ~= nil)then
                 temp = parameter_RealValue0[ parameter_cmds[i] ]
               else
@@ -348,10 +349,13 @@ function _M.decode(payload)
 
         	    if temp ~= -1 then
                 local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / ( 10^temp )
-               -- local parastrformat = "%0."..temp.."f"
-               parastrformat = "%0.2f"
+                local parastrformat = "%0."..temp.."f"
         	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
         	    end --88 
+              ]]
+              local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) 
+              packet[ parameter_cmds[i] ] = paranum
+
             
           end
 
