@@ -365,6 +365,8 @@ function _M.decode(payload)
         packet['status'] = 'SUCCESS'
       else
         packet = {}
+        packet['FCS_Value'] = bit.lshift( getnumber(706) , 8 ) + getnumber(707)
+        packet['FCS'] = utilCalcFCS(FCS_Array,#FCS_Array)
         packet['status'] = 'FCS-ERROR'
       end
 
