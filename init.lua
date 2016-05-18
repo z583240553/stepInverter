@@ -345,14 +345,15 @@ function _M.decode(payload)
               else
                 temp = parameter_RealValue1[ parameter_cmds[i] ]
               end 
-
+--[[
         	    if temp ~= -1 then
                 local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / ( 10^temp )
                 local parastrformat = "%0."..temp.."f"
         	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
         	    end --88 
+              ]]
           end
-          
+
           for i=1,705,1 do        
             table.insert(FCS_Array,getnumber(i))
           end
