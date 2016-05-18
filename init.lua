@@ -336,7 +336,8 @@ function _M.decode(payload)
       else  --读取参数
           packet[ cmds[3] ] = 'func-parameter'
           FCS_Value = bit.lshift( getnumber(706) , 8 ) + getnumber(707)
-
+          packet['test'] = 'test'
+--[[
           for i=1,347,1 do 
       	       local temp = 0
               if(parameter_RealValue0[ parameter_cmds[i] ] ~= nil)then
@@ -351,7 +352,7 @@ function _M.decode(payload)
         	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
         	    end --88 
           end
-
+]]
           for i=1,705,1 do        
             table.insert(FCS_Array,getnumber(i))
           end
