@@ -337,7 +337,7 @@ function _M.decode(payload)
           packet[ cmds[3] ] = 'func-parameter'
           FCS_Value = bit.lshift( getnumber(706) , 8 ) + getnumber(707)
           packet['test'] = 'test'
---[[
+
           for i=1,347,1 do 
       	       local temp = 0
               if(parameter_RealValue0[ parameter_cmds[i] ] ~= nil)then
@@ -352,7 +352,7 @@ function _M.decode(payload)
         	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
         	    end --88 
           end
-]]
+          
           for i=1,705,1 do        
             table.insert(FCS_Array,getnumber(i))
           end
@@ -365,12 +365,6 @@ function _M.decode(payload)
         packet['status'] = 'SUCCESS'
       else
         packet = {}
-        packet['704'] = getnumber(704)
-        packet['705'] = getnumber(705)
-        packet['706'] = getnumber(706)
-        packet['707'] = getnumber(707)
-        packet['FCS_Value'] = bit.lshift( getnumber(706) , 8 ) + getnumber(707)
-        packet['FCS'] = utilCalcFCS(FCS_Array,#FCS_Array)
         packet['status'] = 'FCS-ERROR'
       end
 
