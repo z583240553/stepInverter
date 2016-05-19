@@ -51,6 +51,8 @@ local run_state_cmds={
   [2] = "run_state_2",               --运行状态bit3——正转or反转
   [3] = "run_state_3",               --运行状态bit5——基极封锁与否
   [4] = "run_state_4",               --运行状态bit7——正常or故障
+  [5] = "run_state_5",               --运行状态bit12——限频状态 0未限频 1限频
+  [6] = "run_state_6",               --运行状态bit13——锁梯状态 0未锁梯 1锁梯
 }
 
 local inputIO_cmds ={
@@ -329,26 +331,16 @@ function _M.decode(payload)
                 packet[ run_state_cmds[1+i] ] = 1
               end
           end
---[[
-          local m = bit.band(databuff_table1[12],bit.lshift(1,1))
-          if m==0 then
-            packet[ status_cmds[17] ] = 0
-          else
-            packet[ status_cmds[17] ] = 1
+          --解析run_state bit12 bit13 限频状态 锁梯状态
+          for i=0,1 do
+              local m = bit.band(databuff_table1[12],bit.lshift(1,12+i))
+              if m==0 then
+                packet[ run_state_cmds[5+i] ] = 0
+              else
+                packet[ run_state_cmds[5+i] ] = 1
+              end
           end
-          local n = bit.band(databuff_table1[12],bit.lshift(1,3))
-          if n==0 then
-            packet[ status_cmds[18] ] = 0
-          else
-            packet[ status_cmds[18] ] = 1
-          end
-          local k = bit.band(databuff_table1[12],bit.lshift(1,7))
-          if k==0 then
-            packet[ status_cmds[19] ] = 0
-          else
-            packet[ status_cmds[19] ] = 1
-          end
-]]
+
           --解析inputIO_state(对应高字节getnumber[36],低字节getnumber[37])的每个bit位值
     			for j=0,1 do
     				for i=0,7 do
