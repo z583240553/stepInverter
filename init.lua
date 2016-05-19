@@ -95,7 +95,7 @@ local para_1 = {
   ["P62_"] = 4,
   ["P63_"] = 5,
   ["P70_"] = 10,
-  ["P71_"] = 42,
+  ["P71_"] = 35,
   ["P80_"] = 1,
   ["P81_"] = 8,
   ["P82_"] =5,
@@ -124,11 +124,15 @@ local parameter_cmds = {}
 for k,v in ipairs(para_0) do
   local l = para_1[v]
   for i=0,l-1,1 do
- --   if ("P22_" == v) or ("P23_" == v) then
- --    parameter_cmds[num] = v..string.format("%02d",i+1)
- --   else
+    if ("P71_" == v) then
+      if(i<=25) then
+        parameter_cmds[num] = v..string.format("%02d",i)
+      else
+        parameter_cmds[num] = v..string.format("%02d",i+7)
+      end
+    else
       parameter_cmds[num] = v..string.format("%02d",i)
- --   end
+    end
     num = num + 1
   end
 end
@@ -194,9 +198,8 @@ local parameter_RealValue1 = {
 
 ["P71_00"]=2,["P71_01"]=2,["P71_02"]=2,["P71_03"]=2,["P71_04"]=1,["P71_05"]=0,["P71_06"]=1,["P71_07"]=0,["P71_08"]=0,["P71_09"]=1,
 ["P71_10"]=2,["P71_11"]=0,["P71_12"]=2,["P71_13"]=3,["P71_14"]=3,["P71_15"]=3,["P71_16"]=0,["P71_17"]=1,["P71_18"]=1,["P71_19"]=1,
-["P71_20"]=1,["P71_21"]=1,["P71_22"]=2,["P71_23"]=0,["P71_24"]=0,["P71_25"]=1,["P71_26"]=-1,["P71_27"]=-1,["P71_28"]=-1,["P71_29"]=-1,
-["P71_30"]=-1,["P71_31"]=-1,["P71_32"]=-1,["P71_33"]=1,["P71_34"]=0,["P71_35"]=1,["P71_36"]=1,["P71_37"]=0,["P71_38"]=1,["P71_39"]=0,
-["P71_40"]=0,["P71_41"]=4,
+["P71_20"]=1,["P71_21"]=1,["P71_22"]=2,["P71_23"]=0,["P71_24"]=0,["P71_25"]=1,["P71_33"]=1,["P71_34"]=0,["P71_35"]=1,["P71_36"]=1,
+["P71_37"]=0,["P71_38"]=1,["P71_39"]=0,["P71_40"]=0,["P71_41"]=4,
 
 ["P80_00"]=0,
 
@@ -401,9 +404,9 @@ function _M.decode(payload)
 
       else  --读取参数
           packet[ cmds[3] ] = 'func-parameter'
-          FCS_Value = bit.lshift( getnumber(706) , 8 ) + getnumber(707)
+          FCS_Value = bit.lshift( getnumber(692) , 8 ) + getnumber(693)
 
-          for i=1,347,1 do 
+          for i=1,340,1 do 
       	      
               local temp = 0
               if(parameter_RealValue0[ parameter_cmds[i] ] ~= nil)then
@@ -417,14 +420,9 @@ function _M.decode(payload)
                 local parastrformat = "%0."..temp.."f"
         	      packet[ parameter_cmds[i] ] = string.format(parastrformat,paranum)
         	    end --88 
-              
-            --  local paranum = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) 
-            --  packet[ parameter_cmds[i] ] = paranum
-
-            
           end
 
-          for i=1,705,1 do        
+          for i=1,691,1 do        
             table.insert(FCS_Array,getnumber(i))
           end
         end 
