@@ -6,7 +6,7 @@ local Json = cjson.encode
 
 local insert = table.insert
 local concat = table.concat
---
+
 local strload
 
 local cmds = {
@@ -78,6 +78,7 @@ local inputIO_cmds ={
   [6] = "X5",           --X5
   [7] = "X6"		        --X6
 }
+
 local outputIO_cmds ={
   [1] = "K1",           --K1 有值1时蓝色显示 值0时灰色显示
   [2] = "K2",           --K2
@@ -86,6 +87,7 @@ local outputIO_cmds ={
   [5] = "Y0",           --Y0
   [6] = "Y1"            --Y1
 }
+
 local para_1 = {
   ["P10_"] = 6,
   ["P11_"] = 10,
@@ -121,6 +123,7 @@ local para_1 = {
   ["P95_"] = 3,
   ["P96_"] = 18
 }
+
 local para_0 = {  
           "P10_","P11_","P12_","P13_","P14_",
           "P20_","P21_","P22_","P23_",
@@ -132,6 +135,7 @@ local para_0 = {
           "P80_","P81_","P82_",
           "P90_","P91_","P92_","P93_","P94_","P95_","P96_"
         }
+
 local num = 1
 local parameter_cmds = {}
 
@@ -333,7 +337,7 @@ function _M.decode(payload)
     	    packet[ status_cmds[8] ] = databuff_table1[8] / 1000  
           packet[ status_cmds[9] ] = databuff_table1[9] / 1000
           packet[ status_cmds[16] ] = databuff_table1[16] / 10
---[[
+
           packet[ status_cmds[27] ] = databuff_table1[27] / 10
           packet[ status_cmds[29] ] = databuff_table1[29] / 10
           packet[ status_cmds[30] ] = databuff_table1[30] / 100
@@ -342,7 +346,7 @@ function _M.decode(payload)
           packet[ status_cmds[34] ] = databuff_table1[34] / 10 
           packet[ status_cmds[36] ] = databuff_table1[36] / 10  
           packet[ status_cmds[37] ] = databuff_table1[37] / 10
-]]
+
           --解析run_state bit1 bit3 bit7 bit5对应运行停止 正反转 故障中 基极封锁中
           for i=0,3 do
               local m = bit.band(databuff_table1[12],bit.lshift(1,1+i*2))
@@ -443,7 +447,7 @@ function _M.decode(payload)
           for i=1,691,1 do        
             table.insert(FCS_Array,getnumber(i))
           end
-        end 
+       -- end 
       end
 
       packet[ cmds[4] ] = getnumber(11)
