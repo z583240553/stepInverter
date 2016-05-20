@@ -412,24 +412,7 @@ function _M.decode(payload)
       else if func == 2 then
         
         packet[ cmds[3] ] = 'func-fault'
-        FCS_Value = bit.lshift( getnumber(108) , 8 ) + getnumber(109)
-        --local fault_buff= {}
-        --[[
-        for i=1,48,1 do
-    	    fault_buff[i] = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) )
-        end
-        for i=1,40,1 do
-          local x = i % 6
-          if x == 1 or x == 2 then
-            packet[ fault_cmds[i] ] = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / 100
-          else if x == 3 or x == 4 then 
-            packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
-          else if x == 6 then 
-            packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 )
-          end
-        end
-        ]]
-        
+        FCS_Value = bit.lshift( getnumber(108) , 8 ) + getnumber(109)       
         for i=0,7,1 do
           packet[ fault_cmds[1+i*5] ] = ( bit.lshift( getnumber(12+i*12) , 8 ) + getnumber(13+i*12) ) / 100
           packet[ fault_cmds[2+i*5] ] = ( bit.lshift( getnumber(14+i*12) , 8 ) + getnumber(15+i*12) ) / 100
