@@ -245,11 +245,11 @@ local parameter_RealValue1 = {
 
 local fault_cmds = {}
 local faultcmds = {
-    [1] = "real_speed",
-    [2] = "given_speed",
-    [3] = "bus_voltage",
-    [4] = "current",
-    [5] = "code",
+    [1] = "code",
+    [2] = "real_speed",
+    [3] = "given_speed",
+    [4] = "bus_voltage",
+    [5] = "current"
 }
 
 for i=0,7,1 do
@@ -411,18 +411,16 @@ function _M.decode(payload)
           
       else if func == 2 then
         packet[ cmds[3] ] = 'func-fault'
-        FCS_Value = bit.lshift( getnumber(108) , 8 ) + getnumber(109)
-        for i=1,48,1 do
-    	    local x = i % 6
-    	    if x == 1 or x == 2 then
+        FCS_Value = bit.lshift( getnumber(92) , 8 ) + getnumber(93)
+        for i=1,40,1 do
+    	    local x = i % 5
+    	    if x == 2 or x == 3 then
             packet[ fault_cmds[i] ] = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / 100
-    	    else if x == 3 or x == 4 then
+    	    else
     	      packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
-          else if x == 6 then
-            packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) 
-          end 
+    	    end
         end
-        for i=1,107,1 do        
+        for i=1,91,1 do        
           table.insert(FCS_Array,getnumber(i))
         end
 
