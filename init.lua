@@ -310,6 +310,7 @@ function _M.decode(payload)
       if func == 1 then
           packet[ cmds[3] ] = 'func-status'
           FCS_Value = bit.lshift( getnumber(90) , 8 ) + getnumber(91)
+          return Json(packet)
           for i=1,39,1 do  
           	databuff_table0[i] =  bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) 
           	--判断正负数，处理数据
@@ -321,7 +322,7 @@ function _M.decode(payload)
       			end 
 			      packet[ status_cmds[i] ] = databuff_table1[i]    
           end
-          return Json(packet)
+
           --处理小数点
           packet[ status_cmds[1] ] = databuff_table1[1] / 100
     	    packet[ status_cmds[2] ] = databuff_table1[2] / 100
