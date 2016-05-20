@@ -410,6 +410,7 @@ function _M.decode(payload)
           end
           
       else if func == 2 then
+        --[[
         packet[ cmds[3] ] = 'func-fault'
         FCS_Value = bit.lshift( getnumber(108) , 8 ) + getnumber(109)
         for i=1,48,1 do
@@ -425,7 +426,7 @@ function _M.decode(payload)
         for i=1,107,1 do        
           table.insert(FCS_Array,getnumber(i))
         end
-
+      ]]
       else  --读取参数
           packet[ cmds[3] ] = 'func-parameter'
           FCS_Value = bit.lshift( getnumber(692) , 8 ) + getnumber(693)
