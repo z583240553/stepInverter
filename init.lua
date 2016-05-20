@@ -56,7 +56,7 @@ local status_cmds = {
   [36] = "motor_power",               --电机器额定功率
   [37] = "motor_torq",                --电机器额定转矩
   [38] = "motor_speed",               --电机器转速
-  [39] = "motor_poles"                --电机器极数
+  [39] = "motor_poles",               --电机器极数
 }
 
 --解析运行状态
