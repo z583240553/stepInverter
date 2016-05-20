@@ -42,7 +42,7 @@ local status_cmds = {
   [22] = "current_w",                 --w相电流
   [23] = "system_time",               --系统时间
   [24] = "total_power",               --输出总功率
-  [25] = "power_factor",               --功率因数
+  [25] = "power_factor",              --功率因数
   [26] = "inverter_vol",              --变频器额定电压
   [27] = "inverter_cur",              --变频器额定电流
   [28] = "inverter_freq",             --变频器额定频率
@@ -245,7 +245,7 @@ local parameter_RealValue1 = {
 
 local fault_cmds = {}
 local faultcmds = {
-    [1] = "real_speed"
+    [1] = "real_speed",
     [2] = "given_speed",
     [3] = "bus_voltage",
     [4] = "current",
