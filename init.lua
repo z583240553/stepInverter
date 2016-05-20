@@ -410,23 +410,38 @@ function _M.decode(payload)
           end
           
       else if func == 2 then
-        --[[
+        
         packet[ cmds[3] ] = 'func-fault'
         FCS_Value = bit.lshift( getnumber(108) , 8 ) + getnumber(109)
+        --local fault_buff= {}
+        --[[
         for i=1,48,1 do
-    	    local x = i % 6
-    	    if x == 1 or x == 2 then
+    	    fault_buff[i] = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) )
+        end
+        for i=1,40,1 do
+          local x = i % 6
+          if x == 1 or x == 2 then
             packet[ fault_cmds[i] ] = ( bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) ) / 100
-    	    else if x == 3 or x == 4 then 
-    	      packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
+          else if x == 3 or x == 4 then 
+            packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2)
           else if x == 6 then 
             packet[ fault_cmds[i] ] = bit.lshift( getnumber(10+i*2) , 8 )
-    	    end
+          end
         end
+        ]]
+        
+        for i=0,7,1 do
+          packet[ fault_cmds[1+i*5] ] = ( bit.lshift( getnumber(12+i*12) , 8 ) + getnumber(13+i*12) ) / 100
+          packet[ fault_cmds[2+i*5] ] = ( bit.lshift( getnumber(14+i*12) , 8 ) + getnumber(15+i*12) ) / 100
+          packet[ fault_cmds[3+i*5] ] = ( bit.lshift( getnumber(16+i*12) , 8 ) + getnumber(17+i*12) ) 
+          packet[ fault_cmds[4+i*5] ] = ( bit.lshift( getnumber(18+i*12) , 8 ) + getnumber(19+i*12) ) 
+          packet[ fault_cmds[5+i*5] ] =  getnumber(22+i*12) 
+        end
+     
         for i=1,107,1 do        
           table.insert(FCS_Array,getnumber(i))
         end
-      ]]
+      
       else  --读取参数
           packet[ cmds[3] ] = 'func-parameter'
           FCS_Value = bit.lshift( getnumber(692) , 8 ) + getnumber(693)
