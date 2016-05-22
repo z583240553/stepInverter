@@ -338,22 +338,22 @@ function _M.decode(payload)
           packet[ status_cmds[1] ] = databuff_table1[1] / 100
     	    packet[ status_cmds[2] ] = databuff_table1[2] / 100
     	    packet[ status_cmds[3] ] = databuff_table1[3] / 10
-    	    packet[ status_cmds[4] ] = databuff_table1[4] / 10
+    	    packet[ status_cmds[4] ] = databuff_table1[4] / 100
     	    packet[ status_cmds[5] ] = databuff_table1[5] / 10
     	    packet[ status_cmds[7] ] = databuff_table1[7] / 1000  
     	    packet[ status_cmds[8] ] = databuff_table1[8] / 1000  
           packet[ status_cmds[9] ] = databuff_table1[9] / 1000
-          packet[ status_cmds[16] ] = databuff_table1[16] / 10
+          packet[ status_cmds[16] ] = databuff_table1[16] 
 
           packet[ status_cmds[27] ] = databuff_table1[27] / 10
           packet[ status_cmds[28] ] = databuff_table1[28] / 100
-          packet[ status_cmds[29] ] = databuff_table1[29] / 10
+          packet[ status_cmds[29] ] = databuff_table1[29] / 100
           packet[ status_cmds[30] ] = databuff_table0[30] / 100
           packet[ status_cmds[31] ] = databuff_table1[31] / 100
           packet[ status_cmds[32] ] = databuff_table1[32] / 100
           packet[ status_cmds[34] ] = databuff_table1[34] / 10 
           packet[ status_cmds[35] ] = databuff_table1[35] / 100 
-          packet[ status_cmds[36] ] = databuff_table1[36] / 10  
+          packet[ status_cmds[36] ] = databuff_table1[36] / 100  
           packet[ status_cmds[37] ] = databuff_table1[37] / 10
 
           --[[
