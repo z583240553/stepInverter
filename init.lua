@@ -373,15 +373,24 @@ function _M.decode(payload)
           [39] = "motor_poles",               --电机器极数
           ]]
 
-          --解析run_state bit1 bit3 bit7 bit5对应运行停止 正反转 故障中 基极封锁中
+          --解析run_state bit1 bit3  bit5 bit7对应运行停止 正反转  基极封锁中 故障中
           for i=0,3 do
               local m = bit.band(databuff_table1[12],bit.lshift(1,1+i*2))
-              if m==0 then
-                packet[ run_state_cmds[1+i] ] = 0
+              if(i==2) then  --基极封锁状态 为配合云端 将其状态取反
+                if m==0 then
+                  packet[ run_state_cmds[1+i] ] = 1
+                else
+                  packet[ run_state_cmds[1+i] ] = 0
+                end
               else
-                packet[ run_state_cmds[1+i] ] = 1
-              end
+                if m==0 then
+                  packet[ run_state_cmds[1+i] ] = 0
+                else
+                  packet[ run_state_cmds[1+i] ] = 1
+                end
+              end    
           end
+
           --解析run_state bit12 bit13 限频状态 锁梯状态
           for i=0,1 do
               local m = bit.band(databuff_table1[12],bit.lshift(1,12+i))
@@ -440,10 +449,10 @@ function _M.decode(payload)
         packet[ cmds[3] ] = 'func-fault'
         FCS_Value = bit.lshift( getnumber(108) , 8 ) + getnumber(109)       
         for i=0,7,1 do
-          packet[ fault_cmds[1+i*5] ] = ( bit.lshift( getnumber(12+i*12) , 8 ) + getnumber(13+i*12) ) / 100
-          packet[ fault_cmds[2+i*5] ] = ( bit.lshift( getnumber(14+i*12) , 8 ) + getnumber(15+i*12) ) / 100
+          packet[ fault_cmds[1+i*5] ] = ( bit.lshift( getnumber(12+i*12) , 8 ) + getnumber(13+i*12) ) /100
+          packet[ fault_cmds[2+i*5] ] = ( bit.lshift( getnumber(14+i*12) , 8 ) + getnumber(15+i*12) ) /100
           packet[ fault_cmds[3+i*5] ] = ( bit.lshift( getnumber(16+i*12) , 8 ) + getnumber(17+i*12) ) 
-          packet[ fault_cmds[4+i*5] ] = ( bit.lshift( getnumber(18+i*12) , 8 ) + getnumber(19+i*12) ) 
+          packet[ fault_cmds[4+i*5] ] = ( bit.lshift( getnumber(18+i*12) , 8 ) + getnumber(19+i*12) ) /100
           packet[ fault_cmds[5+i*5] ] =  getnumber(22+i*12) 
         end
      
