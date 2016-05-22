@@ -317,14 +317,21 @@ function _M.decode(payload)
       
           for i=1,39,1 do  
           	databuff_table0[i] =  bit.lshift( getnumber(10+i*2) , 8 ) + getnumber(11+i*2) 
-          	--判断正负数，处理数据
+            
+            --判断正负数，处理数据
             local x = bit.band(databuff_table0[i],bit.lshift(1,15))
-      			if(x == 0) then
-      				databuff_table1[i] = databuff_table0[i]
-      			else
-      				databuff_table1[i] = -(0xffff-databuff_table0[i]+1)
-      			end 
-			      packet[ status_cmds[i] ] = databuff_table1[i]    
+            if(x == 0) then
+              databuff_table1[i] = databuff_table0[i]
+            else
+              databuff_table1[i] = -(0xffff-databuff_table0[i]+1)
+            end 
+          
+          	if(i==30) then
+              packet[ status_cmds[i] ] = databuff_table0[i] 
+            else
+              packet[ status_cmds[i] ] = databuff_table1[i] 
+            end
+			         
           end
 
           --处理小数点
@@ -339,13 +346,32 @@ function _M.decode(payload)
           packet[ status_cmds[16] ] = databuff_table1[16] / 10
 
           packet[ status_cmds[27] ] = databuff_table1[27] / 10
+          packet[ status_cmds[28] ] = databuff_table1[28] / 100
           packet[ status_cmds[29] ] = databuff_table1[29] / 10
-          packet[ status_cmds[30] ] = databuff_table1[30] / 100
+          packet[ status_cmds[30] ] = databuff_table0[30] / 100
           packet[ status_cmds[31] ] = databuff_table1[31] / 100
           packet[ status_cmds[32] ] = databuff_table1[32] / 100
           packet[ status_cmds[34] ] = databuff_table1[34] / 10 
+          packet[ status_cmds[35] ] = databuff_table1[35] / 100 
           packet[ status_cmds[36] ] = databuff_table1[36] / 10  
           packet[ status_cmds[37] ] = databuff_table1[37] / 10
+
+          --[[
+          [26] = "inverter_vol",              --变频器额定电压
+          [27] = "inverter_cur",              --变频器额定电流
+          [28] = "inverter_freq",             --变频器额定频率
+          [29] = "inverter_power",            --变频器额定功率
+          [30] = "inverter_hardver",          --变频器硬件版本号
+          [31] = "inverter_softver",          --变频器软件版本号
+          [32] = "inverter_version",          --变频器版本号
+          [33] = "motor_vol",                 --电机额定电压
+          [34] = "motor_cur",                 --电机器额定电流
+          [35] = "motor_freq",                --电机器额定频率
+          [36] = "motor_power",               --电机器额定功率
+          [37] = "motor_torq",                --电机器额定转矩
+          [38] = "motor_speed",               --电机器转速
+          [39] = "motor_poles",               --电机器极数
+          ]]
 
           --解析run_state bit1 bit3 bit7 bit5对应运行停止 正反转 故障中 基极封锁中
           for i=0,3 do
