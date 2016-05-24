@@ -376,7 +376,7 @@ function _M.decode(payload)
           --解析run_state bit1 bit3  bit5 bit7对应运行停止 正反转  基极封锁中 故障中
           for i=0,3 do
               local m = bit.band(databuff_table1[12],bit.lshift(1,1+i*2))
-              if(i==2) then  --基极封锁状态 为配合云端 将其状态取反
+              if(i==2)or(i==3) then  --基极封锁状态 故障状态 为配合云端 将其状态取反
                 if m==0 then
                   packet[ run_state_cmds[1+i] ] = 1
                 else
